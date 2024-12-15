@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "env": {
+    "MONGODB_URI": "mongodb+srv://test:test@cluster0.6znvghk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "DB_NAME": "Cluster0"
+  },
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/app.py"
+    }
+  ]
+}
