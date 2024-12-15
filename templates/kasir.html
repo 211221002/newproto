@@ -82,7 +82,8 @@
                 font-size: 18px;
             }
 
-            .form-group input, .form-control {
+            .form-group input,
+            .form-control {
                 font-size: 16px;
             }
 
@@ -91,7 +92,8 @@
                 padding: 8px;
             }
 
-            .transaction-table th, .transaction-table td {
+            .transaction-table th,
+            .transaction-table td {
                 font-size: 14px;
             }
 
@@ -106,10 +108,13 @@
     <div class="container-fluid">
         <nav class="navbar navbar-expand-lg navbar-light">
             <a href="{{ url_for('dashboard') }}" style="text-decoration: none;">
-                <div style="width: 145px; height: 56px; justify-content: center; align-items: center; display: inline-flex; margin-top: 20px;">
-                    <div style="width: 145px; height: 56px; background: white; border-radius: 30px; background-image: url('static/bg/6-removebg-preview.png'); background-size: cover; background-position: center; transform: scale(0.8);"></div>
+                <div
+                    style="width: 145px; height: 56px; justify-content: center; align-items: center; display: inline-flex; margin-top: 20px;">
+                    <div
+                        style="width: 145px; height: 56px; background: white; border-radius: 30px; background-image: url('static/bg/6-removebg-preview.png'); background-size: cover; background-position: center; transform: scale(0.8);">
+                    </div>
                 </div>
-            </a>            
+            </a>
             <h3 style="margin-left: 62px;" class="navbar-brand" href="#">Kasir, {{ user['name'] }}</h3>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -227,7 +232,8 @@
                             <input type="hidden" name="kembalian" value="{{ kembalian }}">
                             <input type="hidden" name="uang_pembayarant" value="{{ uang_pembayaran }}">
                             <button type="submit" class="btn btn-success btn-block">Selesaikan Transaksi</button>
-                            <button type="button" onclick="buatStruk()" class="btn btn-info btn-block">Buat Struk</button>
+                            <button type="button" onclick="cetakStruk()" class="btn btn-info btn-block">Buat
+                                Struk</button>
                         </form>
                     </div>
                 </div>
@@ -235,6 +241,221 @@
             {% include 'back_button.html' %}
         </div>
     </div>
+
+    <script>
+        function updateHargaBarang() {
+            const selectedItem = document.getElementById('nama_barang').selectedOptions[0];
+            const price = selectedItem.getAttribute('data-price');
+            document.getElementById('harga_barang').value = price;
+        }
+
+        function tambahTransaksi() {
+            // Get the form values
+            const itemName = document.getElementById('nama_barang').value;
+            const itemPrice = document.getElementById('harga_barang').value;
+            const itemQuantity = document.getElementById('jumlah_barang').value;
+
+            // Check if all fields are filled
+            if (!itemName || !itemPrice || !itemQuantity) {
+                alert("Please fill all fields");
+                return;
+            }
+
+            // Calculate total item price
+            const totalItemPrice = itemPrice * itemQuantity;
+
+            // Check if the item already exists in the table
+            const existingRow = findExistingRow(itemName);
+
+            if (existingRow) {
+                // If the item exists, update the quantity and total
+                const currentQuantity = parseInt(existingRow.querySelector('.item-quantity').textContent);
+                const newQuantity = currentQuantity + parseInt(itemQuantity);
+                const newTotalItemPrice = itemPrice * newQuantity;
+
+                // Update the quantity and total price in the table
+                existingRow.querySelector('.item-quantity').textContent = newQuantity;
+                existingRow.querySelector('.item-total').textContent = newTotalItemPrice;
+
+                // Update the hidden input fields for the item
+                existingRow.querySelector('input[name="jumlah_barang[]"]').value = newQuantity;
+                existingRow.querySelector('input[name="total_item_price[]"]').value = newTotalItemPrice;
+            } else {
+                // If the item doesn't exist, create a new row
+                const tableBody = document.querySelector('.transaction-table tbody');
+                const newRow = document.createElement('tr');
+
+                newRow.innerHTML = `
+            <td>${itemName}</td>
+            <td>${itemPrice}</td>
+            <td class="item-quantity">${itemQuantity}</td>
+            <td class="item-total">${totalItemPrice}</td>
+            <input type="hidden" name="item_name[]" value="${itemName}">
+            <input type="hidden" name="harga_barang[]" value="${itemPrice}">
+            <input type="hidden" name="jumlah_barang[]" value="${itemQuantity}">
+            <input type="hidden" name="total_item_price[]" value="${totalItemPrice}">
+        `;
+
+                // Append the new row to the table, before the Total row
+                const totalRow = tableBody.querySelector('tr:nth-child(1)');
+                tableBody.insertBefore(newRow, totalRow);
+            }
+
+            // Update the total amount after the new item is added or updated
+            updateTotalAmount();
+        }
+
+        // Function to find an existing row with the same item name
+        function findExistingRow(itemName) {
+            const rows = document.querySelectorAll('.transaction-table tbody tr');
+            for (let row of rows) {
+                if (row.querySelector('td') && row.querySelector('td').textContent === itemName) {
+                    return row;
+                }
+            }
+            return null;
+        }
+
+        function updateTotalAmount() {
+            // Calculate the total amount by summing up all item totals
+            let totalAmount = 0;
+            const itemTotals = document.querySelectorAll('.item-total');
+            itemTotals.forEach(itemTotal => {
+                totalAmount += parseFloat(itemTotal.textContent.replace(/[^\d.-]/g, '')); // Remove any non-numeric characters
+            });
+
+            // Format the total amount with a thousands separator (dot or comma)
+            const formattedAmount = formatCurrency(totalAmount);
+
+            // Update the total amount field with the formatted amount
+            document.querySelector('.total-amount').textContent = 'Rp ' + formattedAmount;
+
+            // Set the value of the hidden input for total_amount
+            const totalAmountInput = document.querySelector('input[name="total_amount"]');
+            totalAmountInput.value = totalAmount; // Set the value to the raw totalAmount
+        }
+
+        // Function to format numbers with a thousands separator
+        function formatCurrency(amount) {
+            return amount.toLocaleString('id-ID');  // This will use the Indonesian locale with a dot as the separator
+        }
+
+        function hitungKembalian() {
+            const uangPembayaran = parseFloat(document.getElementById('uang_pembayaran').value.replace(/[^\d.-]/g, '')) || 0;
+            let totalAmount = 0;
+
+            // Calculate the total amount by summing up all item totals
+            const itemTotals = document.querySelectorAll('.item-total');
+            itemTotals.forEach(itemTotal => {
+                totalAmount += parseFloat(itemTotal.textContent.replace(/[^\d.-]/g, '')); // Remove any non-numeric characters
+            });
+
+            // Calculate the change (kembalian)
+            const kembalian = uangPembayaran - totalAmount;
+
+            // Format both total and change with thousands separator
+            const formattedKembalian = formatCurrency(kembalian);
+            const formattedTotalAmount = formatCurrency(totalAmount);
+
+            // Update the total amount and kembalian fields with formatted values
+            document.querySelector('.total-amount').textContent = 'Rp ' + formattedTotalAmount;
+            document.getElementById('kembalian').textContent = 'Rp ' + formattedKembalian;
+
+            // Store the kembalian value as an integer in the hidden input field
+            document.querySelector('input[name="kembalian"]').value = Math.round(kembalian); // Round to the nearest integer
+        }
+
+        // Function to format the currency with thousands separator (optional)
+        function formatCurrency(value) {
+            return value.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }).replace('Rp', '').trim();
+        }
+
+
+        function buatStruk() {
+            // Logic to generate receipt (struk)
+        }
+
+        // Fungsi untuk mencetak struk
+        function cetakStruk() {
+            // Ambil data dari hidden input
+            const itemNames = document.getElementsByName('item_name[]');
+            const itemPrices = document.getElementsByName('harga_barang[]');
+            const itemQuantities = document.getElementsByName('jumlah_barang[]');
+            const itemTotals = document.getElementsByName('total_item_price[]');
+            const totalAmount = document.querySelector('input[name="total_amount"]').value;
+            const paymentAmount = document.querySelector('input[name="uang_pembayaran"]').value;
+            const change = document.querySelector('input[name="kembalian"]').value;
+
+            // Function to format as Indonesian currency (Rp)
+            function formatCurrency(value) {
+                return value.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' }).replace('Rp', '').trim();
+            }
+
+            // Template HTML untuk struk
+            let strukContent = `
+        <div style="font-family: Arial, sans-serif; width: 300px; border: 1px solid #ccc; padding: 10px;">
+            <h2 style="text-align: center;">Nama usaha</h2>
+            <p style="text-align: center;">Jl. Contoh No. 123, Kota</p>
+            <p style="text-align: center;">Telp: no hp</p>
+            <hr>
+            <table style="width: 100%; font-size: 12px;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left;">Barang</th>
+                        <th style="text-align: center;">Qty</th>
+                        <th style="text-align: right;">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+            // Tambahkan item ke struk
+            for (let i = 0; i < itemNames.length; i++) {
+                const name = itemNames[i].value;
+                const quantity = itemQuantities[i].value;
+                const subtotal = itemTotals[i].value;
+
+                strukContent += `
+            <tr>
+                <td>${name}</td>
+                <td style="text-align: center;">${quantity}</td>
+                <td style="text-align: right;">${formatCurrency(parseFloat(subtotal))}</td>
+            </tr>
+        `;
+            }
+
+            // Tambahkan total, pembayaran, dan kembalian
+            strukContent += `
+                </tbody>
+            </table>
+            <hr>
+            <p style="text-align: right;">Total: ${formatCurrency(parseFloat(totalAmount))}</p>
+            <p style="text-align: right;">Bayar: ${formatCurrency(parseFloat(paymentAmount))}</p>
+            <p style="text-align: right;">Kembalian: ${formatCurrency(parseFloat(change))}</p>
+            <hr>
+            <p style="text-align: center;">Terima kasih telah berbelanja!</p>
+        </div>
+    `;
+
+            // Buka jendela baru untuk mencetak struk
+            const printWindow = window.open('', '_blank', 'width=400,height=600');
+            printWindow.document.open();
+            printWindow.document.write(`<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Struk</title>
+</head>
+<body onload="window.print(); window.close();">
+    ${strukContent}
+</body>
+</html>`);
+            printWindow.document.close();
+        }
+
+
+    </script>
 
     <!-- JS Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
