@@ -184,8 +184,8 @@ def gudang():
     # Ambil data pengguna dari sesi
     user = session.get('user')
 
-    # Ambil data barang dari koleksi MongoDB
-    barang = barang_collection.find()  # Mengambil semua data barang
+    # Ambil data barang dari koleksi MongoDB dan urutkan berdasarkan 'quantity' secara menaik
+    barang = barang_collection.find().sort('quantity', 1)  # 1 untuk urutan menaik
     
     # Ubah hasil query menjadi list untuk diteruskan ke template
     barang_list = list(barang)
