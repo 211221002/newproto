@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+</head>
+<style>
+    /* Agar body dan html tidak bisa di-scroll */
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    /* Default background image for larger screens */
+    body {
+            background: url('static/bg/1.png') no-repeat center center fixed;
+            background-size: 100% 100%;
+            /* Menyesuaikan gambar agar mengisi seluruh layar */
+            background-position: center;
+            /* Menjaga gambar tetap terpusat */
+        }
+
+    /* Change background image for mobile screens */
+    @media (max-width: 768px) {
+        body {
+            background: url('static/bg/mobile1.png') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        /* Adjust logo and form position on mobile */
+        .logo {
+            margin-top: 150px; /* Move logo down more on mobile */
+        }
+
+        .container {
+            margin-top: 1200px; /* Move form further down */
+        }
+    }
+
+    /* Mengurangi margin atas pada container untuk memindahkan form login lebih ke atas */
+    .container {
+        margin-top: -50px; /* Set negative margin to move content upwards */
+    }
+
+    /* Responsivitas untuk tampilan lebih kecil (seperti tablet dan ponsel) */
+    @media (max-width: 768px) {
+        .container {
+            margin-top: 50px; /* Adjust margin for smaller screens */
+        }
+    }
+
+    /* Mengatur logo agar berada lebih ke atas */
+    .logo {
+        display: block;
+        margin: -50px auto 20px; /* Adjust margin to move logo closer to top */
+        width: 100%;
+        max-width: 700px;
+        height: auto;
+    }
+</style>
+
+
+<body>
+    <img src="static/bg/5-removebg-preview.png" alt="Logo" class="logo">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7 col-sm-10">
+                
+                <div class="card shadow-lg my-5">
+                    <div class="card-body">
+                        <h3 class="card-title text-center mb-4">Login</h3>
+
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        <div class="alert alert-danger">
+                            {% for category, message in messages %}
+                            {{ message }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+
+                        <form method="POST">
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        </form>
+                        <hr>
+                        <div class="text-center">
+                            <p class="small">Don't have an account? <a href="{{ url_for('register') }}">Register
+                                    here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

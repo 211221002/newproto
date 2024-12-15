@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Ensure no horizontal scroll */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: url('static/bg/2.jpg') no-repeat center center fixed;
+            background-size: cover;
+            background-position: center;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+
+        /* Mobile-specific background image */
+        @media (max-width: 768px) {
+            body {
+                background: url('static/bg/mobile2.jpg') no-repeat center center fixed;
+                background-size: cover;
+            }
+        }
+
+        .navbar {
+            background-color: transparent !important;
+        }
+
+        .navbar-nav .nav-item .nav-link {
+            color: #fff;
+            background-color: #007bff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin: 5px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-nav .nav-item .nav-link:hover {
+            background-color: #0056b3;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-nav .nav-item .nav-link.active,
+        .navbar-nav .nav-item .nav-link:focus {
+            background-color: #0056b3;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .navbar-brand {
+            margin-left: 62px;
+            text-align: left;
+            white-space: normal; /* Allow text to wrap */
+            word-wrap: break-word; /* Break long words */
+            max-width: 80%; /* Set max width */
+            overflow: hidden; /* Hide overflow content */
+            text-overflow: ellipsis; /* Add ellipsis when text is too long */
+        }
+
+        /* Adjust for mobile screens */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                margin-left: 0;
+                text-align: center;
+                font-size: 1.5rem; /* Optional: Adjust the font size */
+                max-width: 100%; /* Allow more space on mobile */
+            }
+        }
+
+        /* Adjusting navbar content for mobile */
+        .card-body .row {
+            justify-content: center;
+        }
+
+        /* Buttons full width on mobile */
+        .btn-lg {
+            width: 100%;
+        }
+
+        /* Make the navbar collapse properly for smaller screens */
+        @media (max-width: 768px) {
+            .navbar-collapse {
+                text-align: center;
+            }
+
+            .navbar-toggler {
+                margin-right: 0;
+            }
+
+            .navbar-brand {
+                margin-left: 0;
+                font-size: 1.5rem;
+            }
+
+            .card-header {
+                font-size: 1.25rem;
+            }
+
+            .card-title {
+                font-size: 1.5rem;
+            }
+
+            .card-text {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <a href="{{ url_for('dashboard') }}" style="text-decoration: none;">
+                <div style="width: 145px; height: 56px; justify-content: center; align-items: center; display: inline-flex; margin-top: 20px;">
+                    <div style="width: 145px; height: 56px; background: white; border-radius: 30px; background-image: url('static/bg/6-removebg-preview.png'); background-size: cover; background-position: center; transform: scale(0.8);"></div>
+                </div>
+            </a>            
+            <h3 class="navbar-brand" href="#">Welcome, {{ user['name'] }}</h3>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="row mt-4">
+            <div class="col-12 col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        Dashboard Overview
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">Welcome to the Dashboard</h5>
+                        <p class="card-text">Here you can manage your business, check your transactions, and more.</p>
+                        <div class="row justify-content-center">
+                            <div class="col-md-4 text-center">
+                                <a href="{{ url_for('kasir') }}" class="btn btn-primary btn-lg mb-3">Kasir</a>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <a href="{{ url_for('gudang') }}" class="btn btn-success btn-lg mb-3">Gudang</a>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <a href="{{ url_for('pembukuan') }}" class="btn btn-warning btn-lg mb-3">Pembukuan</a>
+                            </div>
+                            <div class="col-12 text-center mt-4">
+                                <a href="{{ url_for('input_barang') }}" class="btn btn-info btn-lg">Input Barang</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

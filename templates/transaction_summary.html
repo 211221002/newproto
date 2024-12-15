@@ -1,0 +1,35 @@
+<div class="container">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h3>Ringkasan Transaksi</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-bordered">
+                <tr>
+                    <th>Nama Barang</th>
+                    <td>{{ transaction['item_name'] }}</td>
+                </tr>
+                <tr>
+                    <th>Harga</th>
+                    <td>{{ transaction['price'] }}</td>
+                </tr>
+                <tr>
+                    <th>Jumlah</th>
+                    <td>{{ transaction['quantity'] }}</td>
+                </tr>
+                <tr>
+                    <th>Total</th>
+                    <td>{{ transaction['total'] }}</td>
+                </tr>
+                <tr>
+                    <th>Uang Pembayaran</th>
+                    <td>{{ transaction['payment'] }}</td>
+                </tr>
+                <tr>
+                    <th>Uang Kembalian</th>
+                    <td>{{ transaction['change'] }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

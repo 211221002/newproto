@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">Welcome, {{ user['name'] }}</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('kasir') }}">Kasir</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('gudang') }}">Gudang</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('pembukuan') }}">Pembukuan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="row mt-4">
+            <div class="col-12 col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header">
+                        Dashboard Overview
+                    </div>
+                    <div class="card-body">
+                        <!-- Flash message -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        <ul class="flashes">
+                            {% for category, message in messages %}
+                            <li class="flash {{ category }}">{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        {% endwith %}
+
+                        <!-- Form Input Barang -->
+                        <form action="{{ url_for('input_barang') }}" method="POST">
+                            <div class="form-group">
+                                <label for="item_name">Nama Barang</label>
+                                <input type="text" id="item_name" name="item_name" required
+                                    class="form-control" placeholder="Nama Barang">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="quantity">Jumlah Barang</label>
+                                <input type="number" id="quantity" name="quantity" required
+                                    class="form-control" placeholder="Jumlah Barang">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="purchase_price">Harga Beli</label>
+                                <input type="number" id="purchase_price" name="purchase_price" required
+                                    class="form-control" placeholder="Harga Beli Barang">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="selling_price">Harga Jual</label>
+                                <input type="number" id="selling_price" name="selling_price" required
+                                    class="form-control" placeholder="Harga Jual Barang">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="supplier_name">Nama Supplier</label>
+                                <input type="text" id="supplier_name" name="supplier_name" required
+                                    class="form-control" placeholder="Nama Supplier">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="supplier_address">Alamat Supplier</label>
+                                <input type="text" id="supplier_address" name="supplier_address"
+                                    required class="form-control" placeholder="Alamat Supplier">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="supplier_phone">No HP Supplier</label>
+                                <input type="number" id="supplier_phone" name="supplier_phone" required
+                                    class="form-control" placeholder="No HP Supplier">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Tambah Barang</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

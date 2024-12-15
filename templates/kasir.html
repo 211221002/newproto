@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Kasir</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: url('static/bg/2.jpg') no-repeat center center fixed;
+            background-size: 100% 100%;
+            background-position: center;
+        }
+
+        .navbar {
+            background-color: transparent !important;
+        }
+
+        .navbar-nav .nav-item .nav-link {
+            color: #fff;
+            background-color: #007bff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin: 5px;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-nav .nav-item .nav-link:hover {
+            background-color: #0056b3;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar-nav .nav-item .nav-link.active,
+        .navbar-nav .nav-item .nav-link:focus {
+            background-color: #0056b3;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .container-fluid {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        .form-group input {
+            font-size: 18px;
+        }
+
+        .btn-block {
+            font-size: 18px;
+            padding: 10px;
+        }
+
+        .transaction-item {
+            font-size: 18px;
+        }
+
+        .card {
+            border-radius: 10px;
+        }
+
+        .total-section {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        .transaction-table td {
+            vertical-align: middle;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 18px;
+            }
+
+            .form-group input, .form-control {
+                font-size: 16px;
+            }
+
+            .btn-block {
+                font-size: 16px;
+                padding: 8px;
+            }
+
+            .transaction-table th, .transaction-table td {
+                font-size: 14px;
+            }
+
+            .card-header h3 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <a href="{{ url_for('dashboard') }}" style="text-decoration: none;">
+                <div style="width: 145px; height: 56px; justify-content: center; align-items: center; display: inline-flex; margin-top: 20px;">
+                    <div style="width: 145px; height: 56px; background: white; border-radius: 30px; background-image: url('static/bg/6-removebg-preview.png'); background-size: cover; background-position: center; transform: scale(0.8);"></div>
+                </div>
+            </a>            
+            <h3 style="margin-left: 62px;" class="navbar-brand" href="#">Kasir, {{ user['name'] }}</h3>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('kasir') }}">Kasir</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('gudang') }}">Gudang</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('pembukuan') }}">Pembukuan</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="row">
+            <!-- Left side: Transaction form -->
+            <div class="col-md-6 col-sm-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h3>Proses Transaksi</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/kasir">
+                            <div class="form-group">
+                                <label for="nama_barang">Nama Barang</label>
+                                <select class="form-control" id="nama_barang" name="nama_barang" required
+                                    onchange="updateHargaBarang()">
+                                    <option value="">Pilih Barang</option>
+                                    {% for item_name, sale_price in item_names_and_prices %}
+                                    <option value="{{ item_name }}" data-price="{{ sale_price }}">{{ item_name }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="harga_barang">Harga per Barang</label>
+                                <input type="number" class="form-control" id="harga_barang" name="harga_barang" required
+                                    readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="jumlah_barang">Jumlah Barang</label>
+                                <input type="number" class="form-control" id="jumlah_barang" name="jumlah_barang"
+                                    required>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-block"
+                                onclick="tambahTransaksi()">Tambahkan Transaksi</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right side: Transaction summary with payment -->
+            <div class="col-md-6 col-sm-12">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h3>Ringkasan Transaksi</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/kasir/selesaikan-transaksi">
+                            <table class="table table-bordered transaction-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama Barang</th>
+                                        <th>Harga per Barang</th>
+                                        <th>Jumlah</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for transaction in transaction_summary %}
+                                    <tr>
+                                        <td>{{ transaction.item_name }}</td>
+                                        <td>{{ transaction.harga_barang }}</td>
+                                        <td>{{ transaction.jumlah_barang }}</td>
+                                        <td>{{ transaction.total_item_price }}</td>
+                                        <input type="hidden" name="item_name[]" value="{{ transaction.item_name }}">
+                                        <input type="hidden" name="harga_barang[]"
+                                            value="{{ transaction.harga_barang }}">
+                                        <input type="hidden" name="jumlah_barang[]"
+                                            value="{{ transaction.jumlah_barang }}">
+                                        <input type="hidden" name="total_item_price[]"
+                                            value="{{ transaction.total_item_price }}">
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td colspan="3" class="text-right"><strong>Total</strong></td>
+                                        <td><strong class="total-amount">Rp {{ total_amount }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-right"><strong>Uang Pembayaran</strong></td>
+                                        <td>
+                                            <input type="number" class="form-control" id="uang_pembayaran"
+                                                name="uang_pembayaran" required onchange="hitungKembalian()">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-right"><strong>Kembalian</strong></td>
+                                        <td>
+                                            <strong id="kembalian">Rp 0</strong>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <input type="hidden" name="total_amount" value="{{ total_amount }}">
+                            <input type="hidden" name="kembalian" value="{{ kembalian }}">
+                            <input type="hidden" name="uang_pembayarant" value="{{ uang_pembayaran }}">
+                            <button type="submit" class="btn btn-success btn-block">Selesaikan Transaksi</button>
+                            <button type="button" onclick="buatStruk()" class="btn btn-info btn-block">Buat Struk</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% include 'back_button.html' %}
+        </div>
+    </div>
+
+    <!-- JS Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
