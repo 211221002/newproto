@@ -287,9 +287,13 @@ def update_barang(barang_id):
     if request.method == 'POST':
         # Get the data from the form
         item_name = request.form['item_name']
-        purchase_price = request.form['purchase_price']
-        sale_price = request.form['sale_price']
-        quantity = request.form['quantity']
+        try:
+            purchase_price = int(request.form['purchase_price'])  # Convert to integer
+            sale_price = int(request.form['sale_price'])          # Convert to integer
+            quantity = int(request.form['quantity'])              # Convert to integer
+        except ValueError:
+            flash('Harga beli, harga jual, dan jumlah harus berupa angka.', 'danger')
+            return redirect(url_for('update_barang', barang_id=barang_id))  # Stay on the same page if invalid input
         supplier_name = request.form['supplier_name']
         supplier_address = request.form['supplier_address']
         supplier_phone = request.form['supplier_phone']
@@ -314,6 +318,7 @@ def update_barang(barang_id):
         # Handle GET request (display edit form)
         barang = barang_collection.find_one({'_id': ObjectId(barang_id)})
         return render_template('edit_barang.html', barang=barang)
+
 
 @app.route('/delete_barang/<barang_id>', methods=['POST'])
 def delete_barang(barang_id):
